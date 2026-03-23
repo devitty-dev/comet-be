@@ -4,7 +4,7 @@ import pool, { query } from '../config/db';
 import { User, AuthTokens } from '../types';
 import { generateAccessToken, generateRefreshTokenString } from '../utils/jwt';
 import bcrypt from 'bcrypt';
-import { v4 as uuidv4 } from 'uuid';
+import { randomUUID } from 'crypto';
 import { ConflictError, AuthenticationError, AuthorizationError } from '../utils/errors';
 
 const USER_SELECT_COLUMNS = `id, email, username, display_name, avatar_url, bio, date_of_birth, level, xp, xp_to_next_level, is_onboarded, phone, gender, country, planet_style_id, comets_count, gifts_count, messages_sent_count, messages_received_count, is_online, last_seen_at, last_login_at, created_at, updated_at`;
@@ -82,7 +82,7 @@ export class AuthService {
             } else {
                 // Create new user
                 isNewUser = true;
-                const tempUsername = `user_${uuidv4().substring(0, 8)}`;
+                const tempUsername = `user_${randomUUID().substring(0, 8)}`;
                 const planetStyleId = Math.floor(Math.random() * 7) + 1;
 
                 const insertUserRes = await client.query(
@@ -201,7 +201,7 @@ export class AuthService {
         }
 
         const passwordHash = await bcrypt.hash(password, 10);
-        const tempUsername = `user_${uuidv4().substring(0, 8)}`;
+        const tempUsername = `user_${randomUUID().substring(0, 8)}`;
         const planetStyleId = Math.floor(Math.random() * 7) + 1;
 
         // Convert age to approximate date of birth (June 15 mid-year to minimise off-by-one errors)
